@@ -1,0 +1,6 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: "yum install unzip"
+      yum: name=unzip state=latest
