@@ -1,0 +1,69 @@
+- name: Stop tomcat
+  shell: /opt/tomcat/bin/shutdown.sh
+  tags:
+    - upgrade
+
+- name: Download tomcat lastest file
+  get_url:
+    url: "{{ tomcat_url }}"
+    dest: /opt
+    mode: 0664
+  tags:
+    - upgrade
+    - provision
+
+- name: Extract apache-tomcat-8.5.29.tar.gz into /opt
+  shell: tar -xvf /opt/apache-tomcat-{{ tomcat_version }}.tar.gz
+  args:
+    chdir: /opt
+  tags:
+    - upgrade
+    - provision
+
+- name: Move tomcat to tomcat_old
+  command: mv /opt/tomcat /opt/tomcat_old{{ansible_date_time.date}}
+  ignore_errors: yes
+  tags:
+    - upgrade
+
+- name: Move apache-tomcat-8.5.29 to tomcat
+  command: mv /opt/apache-tomcat-"{{ tomcat_version }}" /opt/tomcat
+  ignore_errors: yes
+  tags:
+    - upgrade
+    - provision
+
+- name: Check Java
+  shell: command -v java
+  register: check_java
+  tags:
+    - upgrade
+    - provision
+
+- name: Symlink install directory
+  become: yes
+  shell: ln -s /opt/tomcat /usr/share/tomcat
+  tags:
+    - upgrade
+    - provision
+
+- name: Change ownership of Tomcat installation
+  become: yes
+  file: path=/usr/share/tomcat/ owner=root group=root state=directory recurse=yes
+  tags:
+    - upgrade
+    - provision
+
+- name: Install Tomcat init script
+  become: yes
+  copy: src=tomcat-initscript.sh dest=/etc/init.d/tomcat mode=755
+  tags:
+    - upgrade
+    - provision
+
+- name: Start tomcat
+  command: /etc/init.d/tomcat start
+  when: check_java.rc == 0
+  tags:
+    - upgrade
+    - provision

@@ -1,0 +1,2 @@
+[tomcat]
+54.95.156.197 ansible_ssh_user=centos ansible_ssh_private_key_file=~/Downloads/kartest.pem
