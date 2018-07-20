@@ -7,4 +7,4 @@
     - name: Copy truncate_files.sh
       copy: src=tomcat-ansible/librenms-status.sh dest=/root mode=755
     - name: Run the script
-      shell: /root/librenms-status.sh
+      shell: sh /root/librenms-status.sh
