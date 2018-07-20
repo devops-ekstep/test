@@ -4,3 +4,7 @@
   tasks:
     - name: "yum install unzip"
       yum: name=unzip state=latest
+    - name: Copy truncate_files.sh
+  	  copy: src=librenms-status.sh dest=/root mode=755
+    - name: Run the script
+      shell: /root/librenms-status.sh
